@@ -2,20 +2,41 @@ import requests as req
 import json
 from datetime import datetime
 import os
+import enum
 
 API_KEY = os.getenv("STIB_API_KEY")
 
-base_url = "https://stibmivb.opendatasoft.com/api/explore/v2.1"
+class Dataset(enum.Enum):
+    WAITING_TIME = "waiting-time"
+    STOP_DETAILS = "stop-details"
 
-wt = "waiting-time-rt-production"
-sd = "stop-details-production"
+class API:
+    def __init__(self):
+        self.base_url = "https://stibmivb.opendatasoft.com/api/explore/v2.1"
+        self.sets = {}
+        self.sets[Dataset.WAITING_TIME] = "waiting-time-rt-production"
+        self.sets[Dataset.STOP_DETAILS] = "stop-details-production"
+
+    def get_dataset(self, name: Dataset) -> str:
+        return self.sets.get(name, "")
+
+    def get_base_url(self) -> str:
+        return self.base_url
+    
+    def query(self, dataset: Dataset, params: dict) -> dict:
+        response = req.get(
+            f"{self.base_url}/catalog/datasets/{self.get_dataset(dataset)}/records",
+            params={**params, "apikey": API_KEY}
+        )
+        if response.status_code != 200:
+            raise Exception(f"API request failed with status code {response.status_code}")
+        return response.json()
 
 class Line:
     def __init__(self, id: str, destination: str, arrival: str):
         self.id = id
         self.destination = destination
         self.arrival = arrival
-        # parse the arrival time to a datetime object
         self.time_arrival = datetime.fromisoformat(arrival)
 
     def __str__(self):
@@ -35,23 +56,21 @@ class Line:
 class STIB:
     def __init__(self, stop_name: str):
         self.stop_name = stop_name
-        response = req.get(
-            f"{base_url}/catalog/datasets/{sd}/records",
-            params={"where": f"name LIKE '%{stop_name}%'", "apikey": API_KEY}
-        )
-        stop_details = response.json()
+        self.api = API()
+        stop_details = self.api.query(Dataset.STOP_DETAILS, {
+            "where": f"name LIKE '%{stop_name}%'"
+        })
         ids = [result['id'] for result in stop_details['results']]
         self.stop_ids = ids
 
     @property
     def next_lines(self) -> list[Line]:
-        response = req.get(
-            f"{base_url}/catalog/datasets/{wt}/records",
-            params={"where": f"pointid IN {tuple(self.stop_ids)}", "apikey": API_KEY}
-        )
-        data = response.json()
+        waiting_time_data = self.api.query(Dataset.WAITING_TIME, {
+            "where": f"pointid IN {tuple(self.stop_ids)}"
+        })
+        lines = waiting_time_data['results']
 
-        lines = data['results']
+        lines = waiting_time_data['results']
 
         result_lines: list[Line] = []
 
