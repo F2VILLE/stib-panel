@@ -1,4 +1,4 @@
-from stib import STIB, Line
+from stib import STIB, Line, API, Dataset
 from datetime import datetime
 from time import sleep
 import sys
@@ -17,6 +17,7 @@ class BusDataProvider(QObject):
         super().__init__()
         self.stib = STIB(BUS_STOP)
         self._bus_data = []
+        self.lineColors = {}
         self.last_update = ""
         self.updateBusData()
     
@@ -32,6 +33,11 @@ class BusDataProvider(QObject):
                 {"line": l.id, "destination": l.destination, "waiting": l.time_left()} 
                 for l in next_lines
             ]
+            for line in next_lines:
+                if line.id not in self.lineColors:
+                    details = line.get_details(line.id)
+                    color = details.get("color", "333333")
+                    self.lineColors[str(line.id)] = f"#{color}" if color else "#333333"
             self.last_update = datetime.now().astimezone().strftime("%H:%M:%S")
             self.busDataChanged.emit()
             print("Updated bus lines at", self.last_update)
@@ -48,6 +54,7 @@ if __name__ == "__main__":
     engine.addImportPath(sys.path[0])
     engine.rootContext().setContextProperty("busProvider", bus_provider)
     engine.rootContext().setContextProperty("busLastUpdate", bus_provider.last_update)
+    engine.rootContext().setContextProperty("busLineColors", bus_provider.lineColors)
     engine.rootContext().setContextProperty("busStopName", BUS_STOP if BUS_STOP else "ULB")
     engine.loadFromModule("views", "main")
     

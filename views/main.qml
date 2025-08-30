@@ -51,21 +51,7 @@ ApplicationWindow {
                     width: 40
                     height: 32
                     radius: 6
-                    color: {
-                        if (modelData.line === "8")
-                            return "#3578e5";
-                        if (modelData.line === "71")
-                            return "#1e981e";
-                        if (modelData.line === "72")
-                            return "#e454cc";
-                        if (modelData.line === "25")
-                            return "#bd3836";
-                        if (modelData.line === "17")
-                            return "#ff3c39";
-                        if (modelData.line === "95")
-                            return "#1932a0";
-                        return "#3a3d40";
-                    }
+                    color: busLineColors[modelData.line] ? busLineColors[modelData.line] : "#3a3d40"
                     border.color: "#f0f0f0"
                     border.width: 1
                     Layout.alignment: Qt.AlignVCenter

@@ -9,6 +9,7 @@ API_KEY = os.getenv("STIB_API_KEY")
 class Dataset(enum.Enum):
     WAITING_TIME = "waiting-time"
     STOP_DETAILS = "stop-details"
+    LINE_DETAILS = "gtfs-routes"
 
 class API:
     def __init__(self):
@@ -16,6 +17,7 @@ class API:
         self.sets = {}
         self.sets[Dataset.WAITING_TIME] = "waiting-time-rt-production"
         self.sets[Dataset.STOP_DETAILS] = "stop-details-production"
+        self.sets[Dataset.LINE_DETAILS] = "gtfs-routes-production"
 
     def get_dataset(self, name: Dataset) -> str:
         return self.sets.get(name, "")
@@ -34,6 +36,7 @@ class API:
 
 class Line:
     def __init__(self, id: str, destination: str, arrival: str):
+        self.api = API()
         self.id = id
         self.destination = destination
         self.arrival = arrival
@@ -52,6 +55,18 @@ class Line:
         if delta < 1:
             return "Arriving now"
         return f"{delta} min"
+
+    def get_details(self, line_id: str) -> dict:
+        response = self.api.query(Dataset.LINE_DETAILS, {
+            "where": f"route_short_name = '{line_id}'"
+        })
+        if not response["results"]:
+            return {}
+        details = {
+            "color": response["results"][0].get("route_color"),
+            "type": response["results"][0].get("route_type")
+        }
+        return details
 
 class STIB:
     def __init__(self, stop_name: str):
