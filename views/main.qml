@@ -7,21 +7,16 @@ ApplicationWindow {
     title: "STIB Panel"
     color: "#111214"
 
-    function setText() {
-        var i = Math.round(Math.random() * 3);
-        text.text = texts[i];
-    }
-
     ColumnLayout {
         anchors.fill: parent
 
-        Text {
-            id: text
-            text: "Arrêt ULB"
-            color: "#f0f0f0"
-            font.pixelSize: 22
-            Layout.alignment: Qt.AlignVTop | Qt.AlignHCenter
-        }
+            Text {
+                id: text
+                text: "Arrêt " + busStopName
+                color: "#f0f0f0"
+                font.pixelSize: 22
+                Layout.alignment: Qt.AlignVTop | Qt.AlignHCenter
+            }
 
         ListView {
             id: busLinesView
@@ -40,7 +35,7 @@ ApplicationWindow {
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
                 Layout.fillWidth: true
                 Text {
-                    text: "Updated at --:--"
+                    text: "Updated at " + busLastUpdate
                     color: "#999999"
                     font.pixelSize: 12
                     Layout.alignment: Qt.AlignVTop | Qt.AlignHCenter
@@ -65,6 +60,10 @@ ApplicationWindow {
                             return "#e454cc";
                         if (modelData.line === "25")
                             return "#bd3836";
+                        if (modelData.line === "17")
+                            return "#ff3c39";
+                        if (modelData.line === "95")
+                            return "#1932a0";
                         return "#3a3d40";
                     }
                     border.color: "#f0f0f0"
