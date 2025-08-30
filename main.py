@@ -6,7 +6,6 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
 from PySide6.QtCore import QObject, QTimer, Signal, Property
 import os
-# clear = "\033[H\033[J"
 
 BUS_STOP = os.getenv("BUS_STOP")
 
