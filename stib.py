@@ -41,6 +41,9 @@ class Line:
         self.destination = destination
         self.arrival = arrival
         self.time_arrival = datetime.fromisoformat(arrival)
+        details = self.get_details(id)
+        self.color = "#" + details.get("color", "333333")
+        self.type = details.get("type", "")
 
     def __str__(self):
         now = datetime.now().astimezone()

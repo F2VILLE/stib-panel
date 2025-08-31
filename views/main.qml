@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Shapes
 
 ApplicationWindow {
     visibility: Window.FullScreen
@@ -10,13 +11,20 @@ ApplicationWindow {
     ColumnLayout {
         anchors.fill: parent
 
-            Text {
-                id: text
-                text: "Arrêt " + busStopName
-                color: "#f0f0f0"
-                font.pixelSize: 22
-                Layout.alignment: Qt.AlignVTop | Qt.AlignHCenter
-            }
+        Text {
+            id: text
+            text: "Arrêt " + busStopName
+            color: "#f0f0f0"
+            font.pixelSize: 22
+            Layout.alignment: Qt.AlignVTop | Qt.AlignHCenter
+        }
+        
+        Text {
+            text: busError
+            color: "#ff9898"
+            font.pixelSize: 16
+            Layout.alignment: Qt.AlignHCenter
+        }
 
         ListView {
             id: busLinesView
@@ -47,11 +55,22 @@ ApplicationWindow {
                 height: 40
                 spacing: 12
 
+                ColumnLayout {
+                    Layout.alignment: Qt.AlignVCenter
+                    Image {
+                        Layout.preferredWidth: 32
+                        Layout.preferredHeight: 32
+                        source: lineTypeIcons[modelData.type]
+                        fillMode: Image.PreserveAspectFit
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+                }
+
                 Rectangle {
                     width: 40
                     height: 32
                     radius: 6
-                    color: busLineColors[modelData.line] ? busLineColors[modelData.line] : "#3a3d40"
+                    color: modelData.color
                     border.color: "#f0f0f0"
                     border.width: 1
                     Layout.alignment: Qt.AlignVCenter
