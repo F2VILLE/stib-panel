@@ -1,16 +1,14 @@
-from stib import STIB, Line, API, Dataset
+from stib import STIB
 from datetime import datetime, timedelta
-from time import sleep
 import os
 import sys
 
-from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
 from PySide6.QtCore import QObject, QTimer, Signal, Property
 
 
-BUS_STOP = os.getenv("BUS_STOP")
+BUS_STOP = os.getenv("BUS_STOP", "ULB")
 
 icons = {}
 
@@ -31,9 +29,7 @@ class BusDataProvider(QObject):
         except Exception as e:
             self.error = f"Error: {e}"
         self._bus_data = []
-        self.lineColors = {}
         self.next_lines = []
-        self.lineTypes = {}
         self.last_update_time = None
         self.last_update = datetime.now().astimezone().strftime("%H:%M:%S")
         self.updateBusData()

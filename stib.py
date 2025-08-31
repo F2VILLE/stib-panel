@@ -1,10 +1,10 @@
 import requests as req
 import json
-from datetime import datetime
 import os
 import enum
+from datetime import datetime
 
-API_KEY = os.getenv("STIB_API_KEY")
+API_KEY = os.getenv("STIB_API_KEY", "")
 
 class Dataset(enum.Enum):
     WAITING_TIME = "waiting-time"
@@ -69,7 +69,6 @@ class Line:
             "color": response["results"][0].get("route_color"),
             "type": response["results"][0].get("route_type")
         }
-        print(details)
         return details
 
 class STIB:
@@ -87,8 +86,6 @@ class STIB:
         waiting_time_data = self.api.query(Dataset.WAITING_TIME, {
             "where": f"pointid IN {tuple(self.stop_ids)}"
         })
-        lines = waiting_time_data['results']
-
         lines = waiting_time_data['results']
 
         result_lines: list[Line] = []
