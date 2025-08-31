@@ -69,6 +69,7 @@ class Line:
             "color": response["results"][0].get("route_color"),
             "type": response["results"][0].get("route_type")
         }
+        print(details)
         return details
 
 class STIB:

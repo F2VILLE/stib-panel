@@ -14,7 +14,7 @@ BUS_STOP = os.getenv("BUS_STOP")
 icons = {}
 
 icons['Bus'] = "./icons/Bus.svg"
-icons['Tramway'] = "./icons/Tramway.svg"
+icons['Tram'] = "./icons/Tramway.svg"
 icons['Metro'] = "./icons/Metro.svg"
 
 

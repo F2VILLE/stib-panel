@@ -11,7 +11,7 @@ pip install -r requirements.txt
 
 Then, simply set the env variables and run the script :
 ```
-API_KEY=your-api-key BUS_STOP=ULB python3 main.py
+STIB_API_KEY=your-api-key BUS_STOP=ULB python3 main.py
 ```
 
 
