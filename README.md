@@ -16,6 +16,20 @@ Then, simply set the env variables and run the script :
 STIB_API_KEY=your-api-key BUS_STOP=ULB python3 main.py
 ```
 
+## Build
+
+To build the app
+```
+./build.sh
+```
+It will output the binary in ./dest/ and copy the QML folder with it.
+The binary needs the QML folder to work.
+
+To clear the build, you can use
+```
+./build.sh clean
+```
+*NOTE* : it will remove the directories AND the binary.
 
 ## Hyprland
 

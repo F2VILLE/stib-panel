@@ -1,3 +1,6 @@
 __pycache__
 .ve/
 start.sh
+build/
+dist/
+*.spec
