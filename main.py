@@ -15,7 +15,7 @@ icons = {}
 
 icons['Bus'] = "./icons/Bus.svg"
 icons['Tram'] = "./icons/Tramway.svg"
-icons['Metro'] = "./icons/Metro.svg"
+icons['Subway'] = "./icons/Metro.svg"
 
 
 class BusDataProvider(QObject):
