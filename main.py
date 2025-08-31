@@ -1,12 +1,13 @@
 from stib import STIB, Line, API, Dataset
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import sleep
+import os
 import sys
+
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
 from PySide6.QtCore import QObject, QTimer, Signal, Property
-import os
 
 
 BUS_STOP = os.getenv("BUS_STOP")
@@ -31,13 +32,19 @@ class BusDataProvider(QObject):
             self.error = f"Error: {e}"
         self._bus_data = []
         self.lineColors = {}
+        self.next_lines = []
         self.lineTypes = {}
+        self.last_update_time = None
         self.last_update = datetime.now().astimezone().strftime("%H:%M:%S")
         self.updateBusData()
     
     @Property(list, notify=busDataChanged)
     def busData(self):
         return self._bus_data
+
+    @Property(str, notify=busDataChanged)
+    def lastUpdate(self):
+        return self.last_update
 
     def updateBusData(self):
         try:
@@ -47,13 +54,21 @@ class BusDataProvider(QObject):
                 except Exception as e:
                     self.error = f"Error: {e}"
                 return
-            next_lines = self.stib.next_lines
-            print("Fetched", len(next_lines), "lines")
+            if self.last_update_time and datetime.now().astimezone() - self.last_update_time < timedelta(seconds=60):
+                self._bus_data = [
+                    {"line": l.id, "destination": l.destination, "waiting": l.time_left(), "color": l.color, "type": l.type}
+                    for l in self.next_lines
+                ]
+                self.busDataChanged.emit()
+                return
+            self.next_lines = self.stib.next_lines
+            print("Fetched", len(self.next_lines), "lines")
             self._bus_data = [
                 {"line": l.id, "destination": l.destination, "waiting": l.time_left(), "color": l.color, "type": l.type}
-                for l in next_lines
+                for l in self.next_lines
             ]
-            self.last_update = datetime.now().astimezone().strftime("%H:%M:%S")
+            self.last_update_time = datetime.now().astimezone()
+            self.last_update = self.last_update_time.strftime("%H:%M:%S")
             self.busDataChanged.emit()
             print("Updated bus lines at", self.last_update)
         except Exception as e:
@@ -61,7 +76,7 @@ class BusDataProvider(QObject):
             self.error = f"Error: {e}"
 
 if __name__ == "__main__":
-    app = QGuiApplication(sys.argv)
+    app = QGuiApplication()
     
     bus_provider = BusDataProvider()
     qmlRegisterType(BusDataProvider, "BusData", 1, 0, "BusDataProvider")
@@ -70,15 +85,13 @@ if __name__ == "__main__":
     engine.addImportPath(sys.path[0])
     engine.rootContext().setContextProperty("busProvider", bus_provider)
     engine.rootContext().setContextProperty("busError", bus_provider.error)
-    engine.rootContext().setContextProperty("busLastUpdate", bus_provider.last_update)
-    # engine.rootContext().setContextProperty("busLineColors", bus_provider.lineColors)
     engine.rootContext().setContextProperty("lineTypeIcons", icons)
     engine.rootContext().setContextProperty("busStopName", BUS_STOP if BUS_STOP else "ULB")
     engine.loadFromModule("views", "main")
     
     timer = QTimer()
     timer.timeout.connect(bus_provider.updateBusData)
-    timer.start(30000) 
+    timer.start(2000) 
     if not engine.rootObjects():
         sys.exit(-1)
     exit_code = app.exec()

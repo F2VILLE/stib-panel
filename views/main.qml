@@ -5,6 +5,8 @@ import QtQuick.Shapes
 
 ApplicationWindow {
     visibility: Window.FullScreen
+    width: 720
+    height: 500
     title: "STIB Panel"
     color: "#111214"
 
@@ -16,6 +18,8 @@ ApplicationWindow {
             text: "Arrêt " + busStopName
             color: "#f0f0f0"
             font.pixelSize: 22
+            font.bold: true
+            padding: 12
             Layout.alignment: Qt.AlignVTop | Qt.AlignHCenter
         }
         
@@ -43,9 +47,10 @@ ApplicationWindow {
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
                 Layout.fillWidth: true
                 Text {
-                    text: "Updated at " + busLastUpdate
+                    text: "Updated at " + busProvider.lastUpdate
                     color: "#999999"
                     font.pixelSize: 12
+                    padding: 4
                     Layout.alignment: Qt.AlignVTop | Qt.AlignHCenter
                 }
             }
@@ -79,6 +84,7 @@ ApplicationWindow {
                         text: modelData.line
                         color: "#f0f0f0"
                         font.pixelSize: 18
+                        font.bold: true
                         anchors.centerIn: parent
                     }
                 }
