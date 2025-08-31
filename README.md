@@ -2,6 +2,8 @@
 
 Display the next arriving bus/tram/metro at a chosen station.
 
+![Screenshot](./Screenshot.jpg)
+
 ## Usage
 
 First, install the dependencies
