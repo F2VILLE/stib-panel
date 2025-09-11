@@ -87,7 +87,7 @@ if __name__ == "__main__":
     
     timer = QTimer()
     timer.timeout.connect(bus_provider.updateBusData)
-    timer.start(2000) 
+    timer.start(1000) 
     if not engine.rootObjects():
         sys.exit(-1)
     exit_code = app.exec()

@@ -87,7 +87,7 @@ class STIB:
             "where": f"pointid IN {tuple(self.stop_ids)}"
         })
         lines = waiting_time_data['results']
-
+        print(lines)
         result_lines: list[Line] = []
 
         for line in lines:
